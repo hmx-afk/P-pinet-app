@@ -6,10 +6,14 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const Pi = window.Pi;
-
   Pi.init({ version: "2.0" });
 
-  const btn = document.getElementById("btn");
+  const btn = document.querySelector("#btn");
+
+  if (!btn) {
+    alert("Button not found ❌");
+    return;
+  }
 
   btn.addEventListener("click", async () => {
 
@@ -25,7 +29,6 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (err) {
 
       console.log(err);
-
       alert("Login failed ❌");
 
     }
