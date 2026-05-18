@@ -1,4 +1,3 @@
-
 document.addEventListener("DOMContentLoaded", () => {
 
   if (!window.Pi) {
@@ -10,7 +9,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   Pi.init({ version: "2.0" });
 
-  document.getElementById("btn").addEventListener("click", async () => {
+  const btn = document.getElementById("btn");
+
+  btn.addEventListener("click", async () => {
 
     try {
 
@@ -19,20 +20,13 @@ document.addEventListener("DOMContentLoaded", () => {
         onIncompletePaymentFound
       );
 
-      console.log(auth);
-
       alert("Welcome " + auth.user.username + " 🚀");
-
-      document.querySelector(".card").innerHTML = `
-        <h2>Welcome ${auth.user.username} 👋</h2>
-        <p>Wallet Connected Successfully ✅</p>
-      `;
 
     } catch (err) {
 
       console.log(err);
 
-      alert("Login cancelled or failed ❌");
+      alert("Login failed ❌");
 
     }
 
