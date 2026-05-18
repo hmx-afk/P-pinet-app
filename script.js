@@ -1,32 +1,45 @@
-const Pi = window.Pi;
 
-// Initialize SDK
-Pi.init({ version: "2.0" });
+document.addEventListener("DOMContentLoaded", () => {
 
-// Login button
-document.getElementById("btn").addEventListener("click", async () => {
-  try {
-    const scopes = ['username', 'payments'];
-
-    const auth = await Pi.authenticate(scopes, onIncompletePaymentFound);
-
-    console.log("User:", auth.user);
-
-    alert("Welcome " + auth.user.username + " 🚀");
-
-    // Show user info in UI (optional)
-    document.querySelector(".card").innerHTML = `
-      <h2>Welcome ${auth.user.username} 👋</h2>
-      <p>You are now connected to Pi Wallet</p>
-    `;
-
-  } catch (err) {
-    console.log(err);
-    alert("Login cancelled or failed ❌");
+  if (!window.Pi) {
+    alert("Open this app in Pi Browser ❌");
+    return;
   }
-});
 
-// Required callback
-function onIncompletePaymentFound(payment) {
-  console.log("Incomplete payment:", payment);
-}
+  const Pi = window.Pi;
+
+  Pi.init({ version: "2.0" });
+
+  document.getElementById("btn").addEventListener("click", async () => {
+
+    try {
+
+      const auth = await Pi.authenticate(
+        ['username', 'payments'],
+        onIncompletePaymentFound
+      );
+
+      console.log(auth);
+
+      alert("Welcome " + auth.user.username + " 🚀");
+
+      document.querySelector(".card").innerHTML = `
+        <h2>Welcome ${auth.user.username} 👋</h2>
+        <p>Wallet Connected Successfully ✅</p>
+      `;
+
+    } catch (err) {
+
+      console.log(err);
+
+      alert("Login cancelled or failed ❌");
+
+    }
+
+  });
+
+  function onIncompletePaymentFound(payment) {
+    console.log(payment);
+  }
+
+});
