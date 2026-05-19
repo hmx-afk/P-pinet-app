@@ -1,28 +1,24 @@
-window.addEventListener("load", () => {
+document.addEventListener("DOMContentLoaded", () => {
 
-  // Check Pi Browser
   if (!window.Pi) {
     alert("Open in Pi Browser ❌");
     return;
   }
 
-  const Pi = window.Pi;
-
-  // Initialize SDK
   Pi.init({ version: "2.0" });
 
-  // Get button
   const btn = document.getElementById("btn");
 
-  // Button click
-  btn.onclick = async () => {
+  if (!btn) {
+    alert("Button ID 'btn' not found ❌");
+    return;
+  }
+
+  btn.addEventListener("click", async () => {
 
     try {
-
-      const scopes = ['username', 'payments'];
-
       const auth = await Pi.authenticate(
-        scopes,
+        ["username", "payments"],
         onIncompletePaymentFound
       );
 
@@ -34,16 +30,12 @@ window.addEventListener("load", () => {
       `;
 
     } catch (err) {
-
       console.log(err);
-
       alert("Login failed ❌");
-
     }
 
-  };
+  });
 
-  // Required callback
   function onIncompletePaymentFound(payment) {
     console.log(payment);
   }
