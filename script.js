@@ -6,83 +6,53 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!btn) return;
 
   let Pi = null;
-  let isPiReady = false;
+  let isReady = false;
 
-  // 🚀 INIT PI ONCE ONLY
+  // 🚀 SAFE INIT
   function initPi() {
 
     if (!window.Pi) {
+      console.log("Pi not found");
       return false;
     }
 
-    if (isPiReady) return true;
+    if (isReady) return true;
 
     Pi = window.Pi;
 
     try {
       Pi.init({
-        version: "2.0",
-        sandbox: true
+        version: "2.0"
+        // ❌ removed sandbox (IMPORTANT FIX)
       });
 
-      isPiReady = true;
+      isReady = true;
       console.log("Pi initialized ✔️");
 
       return true;
 
     } catch (err) {
-      console.log("Pi init error:", err);
+      console.log("Init error:", err);
       return false;
     }
   }
 
-  // 💰 PAYMENT FLOW
-  async function makePayment() {
-
-    try {
-
-      const payment = {
-        amount: 1,
-        memo: "Pi App Journey Payment",
-        metadata: { type: "test-payment" }
-      };
-
-      const callbacks = {
-        onReadyForServerApproval: (id) => {
-          console.log("APPROVE:", id);
-        },
-        onReadyForServerCompletion: (id, txid) => {
-          console.log("COMPLETE:", id, txid);
-        },
-        onCancel: (id) => {
-          console.log("CANCELLED:", id);
-        },
-        onError: (err) => {
-          console.log("PAYMENT ERROR:", err);
-        }
-      };
-
-      const result = await Pi.createPayment(payment, callbacks);
-
-      console.log("PAYMENT SUCCESS:", result);
-      status.innerText = "Payment Successful ✔️";
-
-    } catch (err) {
-      console.log("Payment failed:", err);
-      status.innerText = "Payment Failed ❌";
-    }
-  }
-
-  // 🔐 LOGIN FLOW
+  // 🔐 LOGIN
   async function login() {
+
+    if (!Pi || !Pi.authenticate) {
+      console.log("Pi authenticate not ready");
+      return false;
+    }
 
     try {
 
       status.innerText = "Opening wallet...";
 
-      const auth = await Pi.authenticate(
-        ["username", "payments"]
-      );
+      const auth = await Pi.authenticate([
+        "username",
+        "payments"
+      ]);
 
       console.log("LOGIN SUCCESS:", auth);
 
@@ -100,7 +70,37 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // 🎯 CLICK HANDLER
+  // 💰 PAYMENT
+  async function makePayment() {
+
+    try {
+
+      const payment = {
+        amount: 1,
+        memo: "Pi App Journey Payment",
+        metadata: { type: "test-payment" }
+      };
+
+      const callbacks = {
+        onReadyForServerApproval: (id) => console.log("APPROVE:", id),
+        onReadyForServerCompletion: (id, txid) => console.log("COMPLETE:", id, txid),
+        onCancel: (id) => console.log("CANCEL:", id),
+        onError: (err) => console.log("ERROR:", err)
+      };
+
+      const result = await Pi.createPayment(payment, callbacks);
+
+      console.log("PAYMENT SUCCESS:", result);
+
+      status.innerText = "Payment Successful ✔️";
+
+    } catch (err) {
+      console.log("PAYMENT FAILED:", err);
+      status.innerText = "Payment Failed ❌";
+    }
+  }
+
+  // 🎯 CLICK
   btn.addEventListener("click", async () => {
 
     const ready = initPi();
