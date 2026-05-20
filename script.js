@@ -44,40 +44,4 @@ document.addEventListener("DOMContentLoaded", () => {
       };
 
       const result = await Pi.createPayment(payment, callbacks);
-      console.log("PAYMENT SUCCESS:", result);
-
-    } catch (e) {
-      console.log("Payment failed:", e);
-    }
-  }
-
-  // CLICK EVENT
-  btn.addEventListener("click", async () => {
-
-    const Pi = getPi();
-
-    if (!Pi) {
-      alert("Open in Pi Browser ❌");
-      return;
-    }
-
-    try {
-      status.innerText = "Opening wallet...";
-
-      const auth = await Pi.authenticate(["username"]);
-
-      console.log("LOGIN SUCCESS:", auth);
-
-      status.innerText = "Login Successful ✔️";
-
-      // OPTIONAL: run payment after login
-      await makePayment(Pi);
-
-    } catch (err) {
-      console.log("AUTH ERROR:", err);
-      status.innerText = "Login Failed ❌";
-    }
-
-  });
-
-});
+      console.log("PAYMENT 
