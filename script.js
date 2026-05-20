@@ -1,43 +1,33 @@
-document.addEventListener("DOMContentLoaded", () => {
+async function makePayment() {
 
-  if (!window.Pi) {
-    alert("Open in Pi Browser ❌");
-    return;
-  }
+  const payment = {
+    amount: 1,
+    memo: "Pi App Journey Payment",
+    metadata: { type: "test-payment" }
+  };
 
-  Pi.init({ version: "2.0" });
+  const paymentCallbacks = {
+    onReadyForServerApproval: (paymentId) => {
+      console.log("Ready for approval:", paymentId);
+    },
 
-  const btn = document.getElementById("btn");
+    onReadyForServerCompletion: (paymentId, txid) => {
+      console.log("Ready for completion:", paymentId, txid);
+    },
 
-  if (!btn) {
-    alert("Button ID 'btn' not found ❌");
-    return;
-  }
+    onCancel: (paymentId) => {
+      console.log("Payment cancelled:", paymentId);
+    },
 
-  btn.addEventListener("click", async () => {
-
-    try {
-      const auth = await Pi.authenticate(
-        ["username", "payments"],
-        onIncompletePaymentFound
-      );
-
-      alert("Welcome " + auth.user.username + " 🚀");
-
-      document.querySelector(".card").innerHTML = `
-        <h2>Welcome ${auth.user.username} 👋</h2>
-        <p>Wallet Connected Successfully ✅</p>
-      `;
-
-    } catch (err) {
-      console.log(err);
-      alert("Login failed ❌");
+    onError: (error, payment) => {
+      console.log("Payment error:", error);
     }
+  };
 
-  });
-
-  function onIncompletePaymentFound(payment) {
-    console.log(payment);
+  try {
+    const result = await Pi.createPayment(payment, paymentCallbacks);
+    console.log("Payment success:", result);
+  } catch (err) {
+    console.log("Payment failed:", err);
   }
-
-});
+}
