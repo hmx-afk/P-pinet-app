@@ -3,47 +3,55 @@ document.addEventListener("DOMContentLoaded", () => {
   const btn = document.getElementById("btn");
   const status = document.getElementById("status");
 
-  if (!btn) return;
+  if (!btn || !status) return;
 
-  let Pi = null;
+  let Pi;
   let isReady = false;
 
-  // 🚀 SAFE INIT
-  function initPi() {
+  // 🔒 Disable button until SDK ready
+  btn.disabled = true;
+  status.innerText = "Loading Pi SDK...";
+
+  // 🚀 Initialize Pi SDK
+  async function initPi() {
 
     if (!window.Pi) {
-      console.log("Pi not found");
+      status.innerText = "Open in Pi Browser ❌";
       return false;
     }
 
     if (isReady) return true;
 
-    Pi = window.Pi;
-
     try {
-      Pi.init({
+
+      Pi = window.Pi;
+
+      await Pi.init({
         version: "2.0"
-        // ❌ removed sandbox (IMPORTANT FIX)
       });
 
       isReady = true;
+
       console.log("Pi initialized ✔️");
+
+      status.innerText = "Ready ✔️";
+
+      btn.disabled = false;
 
       return true;
 
     } catch (err) {
-      console.log("Init error:", err);
+
+      console.log("Pi init error:", err);
+
+      status.innerText = "Pi SDK Failed ❌";
+
       return false;
     }
   }
 
-  // 🔐 LOGIN
+  // 🔐 Wallet Login
   async function login() {
-
-    if (!Pi || !Pi.authenticate) {
-      console.log("Pi authenticate not ready");
-      return false;
-    }
 
     try {
 
@@ -56,7 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       console.log("LOGIN SUCCESS:", auth);
 
-      status.innerText = "Login Successful ✔️";
+      status.innerText = `Welcome ${auth.user.username} ✔️`;
 
       return true;
 
@@ -70,51 +78,25 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // 💰 PAYMENT
-  async function makePayment() {
+  // 🚀 Start app
+  initPi();
 
-    try {
-
-      const payment = {
-        amount: 1,
-        memo: "Pi App Journey Payment",
-        metadata: { type: "test-payment" }
-      };
-
-      const callbacks = {
-        onReadyForServerApproval: (id) => console.log("APPROVE:", id),
-        onReadyForServerCompletion: (id, txid) => console.log("COMPLETE:", id, txid),
-        onCancel: (id) => console.log("CANCEL:", id),
-        onError: (err) => console.log("ERROR:", err)
-      };
-
-      const result = await Pi.createPayment(payment, callbacks);
-
-      console.log("PAYMENT SUCCESS:", result);
-
-      status.innerText = "Payment Successful ✔️";
-
-    } catch (err) {
-      console.log("PAYMENT FAILED:", err);
-      status.innerText = "Payment Failed ❌";
-    }
-  }
-
-  // 🎯 CLICK
+  // 🎯 Button Click
   btn.addEventListener("click", async () => {
 
-    const ready = initPi();
-
-    if (!ready) {
-      alert("Open in Pi Browser ❌");
-      return;
-    }
+    // Prevent double click
+    btn.disabled = true;
 
     const loggedIn = await login();
 
     if (loggedIn) {
-      await makePayment();
+
+      console.log("Wallet connected successfully");
+
     }
+
+    // Re-enable button
+    btn.disabled = false;
 
   });
 
