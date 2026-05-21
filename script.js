@@ -1,103 +1,57 @@
-document.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("load", () => {
 
+  // Check Pi Browser
+  if (!window.Pi) {
+    alert("Open in Pi Browser ❌");
+    return;
+  }
+
+  const Pi = window.Pi;
+
+  // Init SDK
+  Pi.init({ version: "2.0" });
+
+  // Button
   const btn = document.getElementById("btn");
-  const status = document.getElementById("status");
 
-  if (!btn || !status) return;
+  // If button missing
+  if (!btn) {
+    alert("Button missing ❌");
+    return;
+  }
 
-  let Pi;
-  let isReady = false;
-
-  // 🔒 Disable button until SDK ready
-  btn.disabled = true;
-  status.innerText = "Loading Pi SDK...";
-
-  // 🚀 Initialize Pi SDK
-  async function initPi() {
-
-    if (!window.Pi) {
-      status.innerText = "Open in Pi Browser ❌";
-      return false;
-    }
-
-    if (isReady) return true;
+  // Login click
+  btn.onclick = async () => {
 
     try {
 
-      Pi = window.Pi;
+      const scopes = ['username', 'payments'];
 
-      await Pi.init({
-        version: "2.0"
-      });
+      const auth = await Pi.authenticate(
+        scopes,
+        onIncompletePaymentFound
+      );
 
-      isReady = true;
+      alert("Welcome " + auth.user.username + " 🚀");
 
-      console.log("Pi initialized ✔️");
-
-      status.innerText = "Ready ✔️";
-
-      btn.disabled = false;
-
-      return true;
+      document.querySelector(".card").innerHTML = `
+        <h2>Welcome ${auth.user.username} 👋</h2>
+        <p>Wallet Connected Successfully ✅</p>
+      `;
 
     } catch (err) {
 
-      console.log("Pi init error:", err);
+      console.log(err);
 
-      status.innerText = "Pi SDK Failed ❌";
+      alert("Login failed ❌");
 
-      return false;
     }
+
+  };
+
+  // Required callback
+  function onIncompletePaymentFound(payment) {
+    console.log(payment);
   }
-
-  // 🔐 Wallet Login
-  async function login() {
-
-    try {
-
-      status.innerText = "Opening wallet...";
-
-      const auth = await Pi.authenticate([
-        "username",
-        "payments"
-      ]);
-
-      console.log("LOGIN SUCCESS:", auth);
-
-      status.innerText = `Welcome ${auth.user.username} ✔️`;
-
-      return true;
-
-    } catch (err) {
-
-      console.log("LOGIN ERROR:", err);
-
-      status.innerText = "Login Failed ❌";
-
-      return false;
-    }
-  }
-
-  // 🚀 Start app
-  initPi();
-
-  // 🎯 Button Click
-  btn.addEventListener("click", async () => {
-
-    // Prevent double click
-    btn.disabled = true;
-
-    const loggedIn = await login();
-
-    if (loggedIn) {
-
-      console.log("Wallet connected successfully");
-
-    }
-
-    // Re-enable button
-    btn.disabled = false;
-
-  });
 
 });
