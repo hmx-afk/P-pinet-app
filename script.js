@@ -1,4 +1,4 @@
-window.addEventListener("DOMContentLoaded", async () => {
+window.addEventListener("DOMContentLoaded", () => {
 
   const Pi = window.Pi;
 
@@ -7,19 +7,24 @@ window.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  // INIT SDK
+  // INIT PI SDK
   Pi.init({ version: "2.0" });
 
+  // =========================
   // INCOMPLETE PAYMENT HANDLER
+  // =========================
   function onIncompletePaymentFound(payment) {
     console.log("🔄 Incomplete payment found:", payment);
   }
 
   // =========================
-  // LOGIN FUNCTION
+  // LOGIN FUNCTION (GLOBAL)
   // =========================
   window.loginPiUser = async function () {
+
     try {
+
+      console.log("🔵 Starting login...");
 
       const scopes = ["payments"];
 
@@ -30,17 +35,21 @@ window.addEventListener("DOMContentLoaded", async () => {
       alert("Wallet Connected Successfully ✅");
 
     } catch (err) {
+
       console.error("❌ Login error:", err);
+
       alert("Login failed ❌");
     }
   };
 
   // =========================
-  // PAYMENT FUNCTION
+  // PAYMENT FUNCTION (GLOBAL)
   // =========================
   window.sendPiPayment = async function () {
 
     try {
+
+      console.log("🔵 Starting payment...");
 
       const payment = await Pi.createPayment(
         {
@@ -73,7 +82,7 @@ window.addEventListener("DOMContentLoaded", async () => {
           // STEP 2: COMPLETION
           onReadyForServerCompletion: async function (paymentId, txid) {
 
-            console.log("🟡 Completing:", paymentId, txid);
+            console.log("🟡 Completing payment...");
 
             try {
               const res = await fetch("https://YOUR-BACKEND.com/complete", {
@@ -90,12 +99,16 @@ window.addEventListener("DOMContentLoaded", async () => {
             }
           },
 
+          // CANCEL
           onCancel: function (paymentId) {
             console.log("⚠️ Payment cancelled:", paymentId);
+            alert("Payment Cancelled");
           },
 
+          // ERROR
           onError: function (error) {
             console.error("❌ Payment error:", error);
+            alert("Payment Error");
           }
         }
       );
@@ -103,7 +116,9 @@ window.addEventListener("DOMContentLoaded", async () => {
       console.log("🚀 Payment started:", payment);
 
     } catch (err) {
+
       console.error("❌ Create payment failed:", err);
+      alert("Payment failed ❌");
     }
   };
 
