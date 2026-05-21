@@ -1,47 +1,71 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Pi App Journey</title>
-
-  <link rel="stylesheet" href="style.css">
-
-  <!-- Pi SDK MUST LOAD FIRST -->
-  <script src="https://sdk.minepi.com/pi-sdk.js"></script>
-</head>
-
 <body>
 
-  <header>🚀 Pi App Journey</header>
+<div class="box">
 
-  <div class="container">
+  <h1>🚀 Pi App Journey</h1>
 
-    <div class="card">
+  <p>Connect your Pi Wallet</p>
 
-      <h2>Welcome 👋</h2>
+  <button id="loginBtn">
+    Start Wallet Login
+  </button>
 
-      <p>Click below to connect Pi Wallet</p>
+  <div id="status"></div>
 
-      <!-- LOGIN BUTTON -->
-      <button onclick="loginPiUser()">
-        Start Wallet Login
-      </button>
+</div>
 
-      <br><br>
+<script>
 
-      <!-- PAYMENT BUTTON -->
-      <button onclick="sendPiPayment()">
-        Pay 0.1 Pi
-      </button>
+window.addEventListener("DOMContentLoaded", () => {
 
-    </div>
+  const status = document.getElementById("status");
+  const btn = document.getElementById("loginBtn");
 
-  </div>
+  if (typeof Pi === "undefined") {
+    status.innerText = "Pi SDK not loaded ❌";
+    return;
+  }
 
-  <!-- SCRIPT MUST LOAD  -->
-  <script src="script.js"></script>
+  status.innerText = "Pi SDK Loaded ✔️";
+
+  Pi.init({
+    version: "2.0",
+    sandbox: false
+  });
+
+  btn.addEventListener("click", async () => {
+
+    try {
+
+      status.innerText = "Opening Pi Wallet...";
+
+      const scopes = ["username", "payments"];
+
+      const auth = await Pi.authenticate(
+        scopes,
+        function(payment) {
+          console.log(payment);
+        }
+      );
+
+      console.log(auth);
+
+      status.innerText =
+        "Welcome " + auth.user.username + " ✔️";
+
+    } catch (err) {
+
+      console.error(err);
+
+      status.innerText =
+        "Login failed ❌";
+
+    }
+
+  });
+
+});
+
+</script>
 
 </body>
-</html>
