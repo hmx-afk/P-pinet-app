@@ -8,7 +8,7 @@
 
   <link rel="stylesheet" href="style.css">
 
-  <!-- Pi SDK -->
+  <!-- Pi SDK MUST LOAD FIRST -->
   <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 </head>
 
@@ -24,15 +24,23 @@
 
       <p>Click below to connect Pi Wallet</p>
 
-      <button id="btn">
+      <!-- LOGIN BUTTON -->
+      <button onclick="loginPiUser()">
         Start Wallet Login
+      </button>
+
+      <br><br>
+
+      <!-- PAYMENT BUTTON -->
+      <button onclick="sendPiPayment()">
+        Pay 0.1 Pi
       </button>
 
     </div>
 
   </div>
 
-  <!-- Your Script -->
+  <!-- SCRIPT MUST LOAD LAST -->
   <script src="script.js"></script>
 
 </body>
