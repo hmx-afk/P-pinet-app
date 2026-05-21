@@ -1,39 +1,3 @@
-window.addEventListener("DOMContentLoaded", () => {
-
-  const Pi = window.Pi;
-
-  if (!Pi) {
-    console.error("❌ Pi SDK not loaded");
-    return;
-  }
-
-  // INIT SDK
-  Pi.init({ version: "2.0" });
-
-  // INCOMPLETE PAYMENT HANDLER
-  function onIncompletePaymentFound(payment) {
-    console.log("🔄 Incomplete payment:", payment);
-  }
-
-  // =========================
-  // LOGIN
-  // =========================
-  window.loginPiUser = async function () {
-
-    try {
-
-      const auth = await Pi.authenticate(
-        ["payments"],
-        onIncompletePaymentFound
-      );
-
-      console.log("✅ Login success:", auth);
-      alert("Wallet Connected ✔️");
-
-    } catch (err) {
-      console.error("❌ Login error:", err);
-      alert("Login failed ❌");
-    }
   };
 
   // =========================
