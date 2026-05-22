@@ -68,65 +68,56 @@ async function login() {
 async function sendPiPayment() {
 
   if (typeof Pi === "undefined") {
-
     alert("Pi SDK not loaded ❌");
-
     return;
   }
 
   try {
 
     Pi.createPayment(
-
       {
         amount: 0.1,
         memo: "Pi App Journey",
         metadata: {
-          type: "test-payment",
-          app: "Pi Journey"
+          type: "test-payment"
         }
       },
 
       {
 
-        // APPROVAL STAGE
+        // APPROVAL
         onReadyForServerApproval: function(paymentId) {
 
-          console.log(
-            "Ready for approval:",
-            paymentId
-          );
+          console.log("Approve:", paymentId);
 
-          alert("Payment approval stage ✔️");
+          // FAKE APPROVAL FOR TESTING
+          setTimeout(() => {
+
+            alert("Payment approved ✔️");
+
+          }, 1000);
         },
 
 
-        // COMPLETION STAGE
-        onReadyForServerCompletion: function(
-          paymentId,
-          txid
-        ) {
 
-          console.log(
-            "Completed:",
-            paymentId,
-            txid
-          );
+        // COMPLETION
+        onReadyForServerCompletion: function(paymentId, txid) {
+
+          console.log("Completed:", paymentId, txid);
 
           alert("Payment completed ✔️");
         },
 
 
-        // CANCELLED
+
+        // CANCEL
         onCancel: function(paymentId) {
 
-          console.log(
-            "Cancelled:",
-            paymentId
-          );
+          console.log("Cancelled:", paymentId);
 
           alert("Payment cancelled ❌");
         },
+
 
 
         // ERROR
@@ -147,23 +138,4 @@ async function sendPiPayment() {
 
     alert("Payment failed ❌");
   }
-}
-
-
-// ==========================
-// LOGOUT
-// ==========================
-function logout() {
-
-  userData = null;
-
-  document.getElementById("loginBtn").style.display =
-    "block";
-
-  document.getElementById("dashboard").classList.add(
-    "hidden"
-  );
-
-  document.getElementById("status").innerText =
-    "Connect your Pi Wallet";
 }
