@@ -1,35 +1,45 @@
 body {
-  margin: 0;
-  font-family: Arial;
-  background: #0f172a;
+  font-family: Arial, sans-serif;
+  background: #0b0f1a;
   color: white;
-}
-
-header {
-  padding: 20px;
   text-align: center;
-  background: #1e293b;
-  font-size: 22px;
-  font-weight: bold;
+  padding: 50px;
 }
 
 .container {
-  padding: 30px;
-  text-align: center;
-}
-
-.card {
-  background: #1e293b;
-  padding: 20px;
-  border-radius: 12px;
   max-width: 400px;
   margin: auto;
+  background: #151c2c;
+  padding: 20px;
+  border-radius: 12px;
 }
 
 button {
-  padding: 10px 15px;
+  padding: 12px;
+  margin: 10px;
+  width: 100%;
   border: none;
   border-radius: 8px;
-  background: #3b82f6;
-  color: white;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+#loginBtn {
+  background: #f5b942;
+}
+
+.payBtn {
+  background: #2ecc71;
+}
+
+.logoutBtn {
+  background: #e74c3c;
+}
+
+.hidden {
+  display: none;
+}
+
+#status {
+  opacity: 0.8;
 }
