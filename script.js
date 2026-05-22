@@ -1,45 +1,72 @@
-body {
-  font-family: Arial, sans-serif;
-  background: #0b0f1a;
-  color: white;
-  text-align: center;
-  padding: 50px;
+let userData = null;
+
+// INIT PI SDK
+document.addEventListener("DOMContentLoaded", () => {
+  if (typeof Pi === "undefined") {
+    document.getElementById("status").innerText = "Pi SDK not loaded ❌";
+    return;
+  }
+
+  Pi.init({
+    version: "2.0",
+    sandbox: true
+  });
+
+  console.log("Pi SDK Ready ✅");
+});
+
+// LOGIN FUNCTION
+async function login() {
+  try {
+    const scopes = ["username", "payments"];
+
+    const auth = await Pi.authenticate(scopes);
+
+    userData = auth.user;
+
+    document.getElementById("username").innerText =
+      "User: " + userData.username;
+
+    document.getElementById("status").innerText =
+      "Wallet Connected ✔️";
+
+    document.getElementById("loginBtn").style.display = "none";
+    document.getElementById("dashboard").classList.remove("hidden");
+
+  } catch (err) {
+    console.error(err);
+    alert("Login failed");
+  }
 }
 
-.container {
-  max-width: 400px;
-  margin: auto;
-  background: #151c2c;
-  padding: 20px;
-  border-radius: 12px;
+// PAYMENT FUNCTION
+async function sendPiPayment() {
+  try {
+    const payment = await Pi.createPayment({
+      amount: 0.1,
+      memo: "Pi App Journey Payment",
+      metadata: {
+        app: "Pi Journey",
+        type: "test"
+      }
+    });
+
+    alert("Payment created successfully ✔️");
+    console.log(payment);
+
+  } catch (err) {
+    console.error(err);
+    alert("Payment failed ❌");
+  }
 }
 
-button {
-  padding: 12px;
-  margin: 10px;
-  width: 100%;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 16px;
-}
+// LOGOUT
+function logout() {
+  userData = null;
 
-#loginBtn {
-  background: #f5b942;
-}
+  document.getElementById("loginBtn").style.display = "block";
+  document.getElementById("dashboard").classList.add("hidden");
 
-.payBtn {
-  background: #2ecc71;
-}
-
-.logoutBtn {
-  background: #e74c3c;
-}
-
-.hidden {
-  display: none;
-}
-
-#status {
-  opacity: 0.8;
+  document.getElementById("status").innerText =
+    "Connect your Pi Wallet";
 }
