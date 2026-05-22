@@ -1,63 +1,45 @@
-window.sendPiPayment = async function () {
+body {
+  font-family: Arial, sans-serif;
+  background: #0b0f1a;
+  color: white;
+  text-align: center;
+  padding: 50px;
+}
 
-  if (typeof Pi === "undefined") {
-    alert("Pi SDK not loaded");
-    return;
-  }
+.container {
+  max-width: 400px;
+  margin: auto;
+  background: #151c2c;
+  padding: 20px;
+  border-radius: 12px;
+}
 
-  try {
+button {
+  padding: 12px;
+  margin: 10px;
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+}
 
-    const paymentData = {
-      amount: 0.1,
-      memo: "Pi App Journey Payment",
-      metadata: {
-        type: "test-payment",
-        app: "Pi App Journey"
-      }
-    };
+#loginBtn {
+  background: #f5b942;
+}
 
-    const paymentCallbacks = {
+.payBtn {
+  background: #2ecc71;
+}
 
-      onReadyForServerApproval: function (paymentId) {
+.logoutBtn {
+  background: #e74c3c;
+}
 
-        console.log("Ready for server approval:", paymentId);
+.hidden {
+  display: none;
+}
 
-      },
-
-      onReadyForServerCompletion: function (paymentId, txid) {
-
-        console.log("Ready for completion:", paymentId, txid);
-
-        alert("Payment Success ✅");
-
-      },
-
-      onCancel: function (paymentId) {
-
-        console.log("Payment cancelled", paymentId);
-
-        alert("Payment Cancelled");
-
-      },
-
-      onError: function (error, payment) {
-
-        console.error("Payment Error:", error);
-
-        alert("Payment Failed ❌");
-
-      }
-
-    };
-
-    await Pi.createPayment(paymentData, paymentCallbacks);
-
-  } catch (err) {
-
-    console.error(err);
-
-    alert("Unexpected Error ❌");
-
-  }
-
-};
+#status {
+  opacity: 0.8;
+}
