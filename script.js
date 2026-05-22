@@ -1,39 +1,3 @@
-const express = require("express");
-const fetch = require("node-fetch");
-
-const app = express();
-app.use(express.json());
-
-const API_KEY = "YOUR_PI_API_KEY";
-
-// =========================
-// APPROVE PAYMENT
-// =========================
-app.post("/approve", async (req, res) => {
-
-  const { paymentId } = req.body;
-
-  try {
-
-    const response = await fetch(
-      `https://api.minepi.com/v2/payments/${paymentId}/approve`,
-      {
-        method: "POST",
-        headers: {
-          "Authorization": `Key ${API_KEY}`
-        }
-      }
-    );
-
-    const data = await response.json();
-
-    console.log("APPROVED:", data);
-
-    res.json(data);
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "approve failed" });
   }
 });
 
