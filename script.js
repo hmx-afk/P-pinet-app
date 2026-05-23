@@ -1,122 +1,73 @@
-let userData = null;
+const express = require("express");
+const axios = require("axios");
+const cors = require("cors");
 
-// ==========================
-// INIT PI SDK
-// ==========================
-document.addEventListener("DOMContentLoaded", () => {
+const app = express();
 
-  const loginBtn = document.getElementById("loginBtn");
-  const payBtn = document.getElementById("payBtn");
+app.use(cors());
+app.use(express.json());
 
-  // LOGIN BUTTON FIX
-  loginBtn.addEventListener("click", login);
+const PI_API_KEY = "YOUR_PI_API_KEY"; // from Pi developer portal
 
-  // PAYMENT BUTTON FIX
-  payBtn.addEventListener("click", sendPiPayment);
+// ======================
+// APPROVE PAYMENT
+// ======================
+app.post("/approve-payment", async (req, res) => {
 
-  if (typeof Pi === "undefined") {
-    document.getElementById("status").innerText = "Pi SDK not loaded ❌";
-    console.log("Pi SDK missing");
-    return;
+  const { paymentId } = req.body;
+
+  try {
+
+    const response = await axios.post(
+      `https://api.minepi.com/v2/payments/${paymentId}/approve`,
+      {},
+      {
+        headers: {
+          Authorization: `Key ${PI_API_KEY}`
+        }
+      }
+    );
+
+    console.log("Approved:", response.data);
+
+    res.json({ success: true });
+
+  } catch (err) {
+    console.log(err.response?.data || err.message);
+    res.status(500).json({ error: "Approval failed" });
   }
-
-  Pi.init({
-    version: "2.0",
-    sandbox: true
-  });
-
-  console.log("Pi SDK Ready ✔️");
 });
 
 
-// ==========================
-// LOGIN FUNCTION
-// ==========================
-async function login() {
+// ======================
+// COMPLETE PAYMENT
+// ======================
+app.post("/complete-payment", async (req, res) => {
+
+  const { paymentId, txid } = req.body;
 
   try {
 
-    const scopes = ["username", "payments"];
-
-    const auth = await Pi.authenticate(scopes);
-
-    userData = auth.user;
-
-    document.getElementById("username").innerText =
-      "User: " + userData.username;
-
-    document.getElementById("status").innerText =
-      "Wallet Connected ✔️";
-
-    document.getElementById("loginBtn").style.display = "none";
-
-    document.getElementById("dashboard").classList.remove("hidden");
-
-    console.log(auth);
-
-  } catch (err) {
-    console.log(err);
-    alert("Login failed ❌");
-  }
-}
-
-
-// ==========================
-// PAYMENT FUNCTION
-// ==========================
-async function sendPiPayment() {
-
-  if (typeof Pi === "undefined") {
-    alert("Pi SDK not loaded ❌");
-    return;
-  }
-
-  try {
-
-    Pi.createPayment({
-      amount: 0.1,
-      memo: "Pi App Journey Payment",
-      metadata: { type: "test-payment" }
-    }, {
-
-      onReadyForServerApproval: function(paymentId) {
-
-        console.log("Approve:", paymentId);
-
-        fetch("/approve-payment", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ paymentId })
-        });
-
-      },
-
-      onReadyForServerCompletion: function(paymentId, txid) {
-
-        console.log("Complete:", paymentId, txid);
-
-        fetch("/complete-payment", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ paymentId, txid })
-        });
-
-      },
-
-      onCancel: function(paymentId) {
-        console.log("Cancelled:", paymentId);
-        alert("Payment cancelled ❌");
-      },
-
-      onError: function(error) {
-        console.error(error);
-        alert("Payment failed ❌");
+    const response = await axios.post(
+      `https://api.minepi.com/v2/payments/${paymentId}/complete`,
+      { txid },
+      {
+        headers: {
+          Authorization: `Key ${PI_API_KEY}`
+        }
       }
+    );
 
-    });
+    console.log("Completed:", response.data);
+
+    res.json({ success: true });
 
   } catch (err) {
-    console.error(err);
-    alert("Payment error ❌");
+    console.log(err.response?.data || err.message);
+    res.status(500).json({ error: "Completion failed" });
   }
-}
+});
+
+app.listen(3000, () => {
+  console.log("Pi Backend running on port 3000 🚀");
+});
