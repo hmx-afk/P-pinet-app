@@ -1,39 +1,3 @@
-const express = require("express");
-const axios = require("axios");
-const cors = require("cors");
-
-const app = express();
-
-app.use(cors());
-app.use(express.json());
-
-const PI_API_KEY = "YOUR_PI_API_KEY"; // from Pi developer portal
-
-// ======================
-// APPROVE PAYMENT
-// ======================
-app.post("/approve-payment", async (req, res) => {
-
-  const { paymentId } = req.body;
-
-  try {
-
-    const response = await axios.post(
-      `https://api.minepi.com/v2/payments/${paymentId}/approve`,
-      {},
-      {
-        headers: {
-          Authorization: `Key ${PI_API_KEY}`
-        }
-      }
-    );
-
-    console.log("Approved:", response.data);
-
-    res.json({ success: true });
-
-  } catch (err) {
-    console.log(err.response?.data || err.message);
     res.status(500).json({ error: "Approval failed" });
   }
 });
