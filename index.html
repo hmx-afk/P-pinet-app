@@ -6,27 +6,43 @@
   <title>Pi App Journey</title>
 
   <script src="https://sdk.minepi.com/pi-sdk.js"></script>
-  <link rel="stylesheet" href="style.css"/>
+
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      background: #0f172a;
+      color: white;
+      padding-top: 50px;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    #loginBtn { background: #22c55e; }
+    #payBtn { background: #3b82f6; }
+
+    .hidden { display: none; }
+  </style>
 </head>
 
 <body>
 
-  <div class="container">
+  <h1>🚀 Pi App Journey</h1>
 
-    <h1>🚀 Pi App Journey</h1>
+  <p id="status">Connect your Pi Wallet</p>
+  <p id="username"></p>
 
-    <p id="status">Connect your Pi Wallet</p>
+  <button id="loginBtn">Start Wallet Login</button>
+  <button id="payBtn">Pay 0.1 π</button>
 
-    <p id="username"></p>
-
-    <button id="loginBtn">Start Wallet Login</button>
-
-    <button id="payBtn">Pay 0.1 π</button>
-
-    <div id="dashboard" class="hidden">
-      <h3>Dashboard</h3>
-    </div>
-
+  <div id="dashboard" class="hidden">
+    <h3>Dashboard</h3>
   </div>
 
   <script src="script.js"></script>
