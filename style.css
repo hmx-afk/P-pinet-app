@@ -1,30 +1,40 @@
-body {
-  font-family: Arial;
-  text-align: center;
-  background: #0f172a;
-  color: white;
+body{
+  margin:0;
+  padding:0;
+  background:#07142b;
+  color:white;
+  font-family:Arial;
 }
 
-.container {
-  margin-top: 50px;
+.container{
+  text-align:center;
+  margin-top:120px;
 }
 
-button {
-  padding: 10px 20px;
-  margin: 10px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
+h1{
+  font-size:45px;
 }
 
-#loginBtn {
-  background: #22c55e;
+p{
+  font-size:22px;
+  margin-bottom:40px;
 }
 
-#payBtn {
-  background: #3b82f6;
+button{
+  padding:18px 30px;
+  border:none;
+  border-radius:12px;
+  font-size:20px;
+  cursor:pointer;
+  margin:10px;
 }
 
-.hidden {
-  display: none;
+#loginBtn{
+  background:#16c65b;
+  color:black;
+}
+
+#payBtn{
+  background:#4d86ff;
+  color:white;
 }
