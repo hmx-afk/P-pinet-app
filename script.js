@@ -1,123 +1,133 @@
-let userData = null;
-
-// ==========================
-// WAIT FOR PAGE LOAD
-// ==========================
-document.addEventListener("DOMContentLoaded", () => {
-
-  const loginBtn = document.getElementById("loginBtn");
-  const payBtn = document.getElementById("payBtn");
-
-  // SAFELY ATTACH EVENTS
-  loginBtn.addEventListener("click", login);
-  payBtn.addEventListener("click", sendPiPayment);
-
-  // CHECK SDK
-  if (typeof Pi === "undefined") {
-    document.getElementById("status").innerText =
-      "Pi SDK not loaded ❌";
-    console.log("Pi SDK missing");
-    return;
-  }
-
-  Pi.init({
-    version: "2.0",
-    sandbox: true
-  });
-
-  console.log("Pi SDK Ready ✔️");
+Pi.init({
+  version: "2.0",
+  sandbox: true
 });
 
+const loginBtn = document.getElementById("loginBtn");
+const payBtn = document.getElementById("payBtn");
+const statusText = document.getElementById("status");
 
-// ==========================
-// LOGIN FUNCTION
-// ==========================
+loginBtn.addEventListener("click", login);
+payBtn.addEventListener("click", sendPayment);
+
 async function login() {
 
   try {
 
-    const scopes = ["username", "payments"];
+    const scopes = ['payments'];
 
-    const auth = await Pi.authenticate(scopes);
+    const auth = await Pi.authenticate(
+      scopes,
+      onIncompletePaymentFound
+    );
 
-    userData = auth.user;
-
-    document.getElementById("username").innerText =
-      "User: " + userData.username;
-
-    document.getElementById("status").innerText =
-      "Wallet Connected ✔️";
-
-    document.getElementById("loginBtn").style.display = "none";
-
-    document.getElementById("dashboard").classList.remove("hidden");
+    statusText.innerText =
+      "Welcome " + auth.user.username;
 
   } catch (err) {
-    console.log(err);
-    alert("Login failed ❌");
+
+    console.error(err);
+
+    statusText.innerText =
+      "Login Failed";
+
   }
 }
 
+function onIncompletePaymentFound(payment) {
 
-// ==========================
-// PAYMENT FUNCTION
-// ==========================
-async function sendPiPayment() {
+  console.log("Incomplete payment found");
 
-  if (typeof Pi === "undefined") {
-    alert("Pi SDK not loaded ❌");
-    return;
-  }
+  console.log(payment);
+}
 
-  try {
+function sendPayment() {
 
-    Pi.createPayment({
-      amount: 0.1,
-      memo: "Pi App Journey Payment",
-      metadata: { type: "test-payment" }
-    }, {
+  const paymentData = {
+    amount: 0.1,
+    memo: "Pi Payment Test",
+    metadata: {
+      product: "Pi App Journey"
+    }
+  };
 
-      onReadyForServerApproval: function(paymentId) {
+  Pi.createPayment(
 
-        console.log("Approve:", paymentId);
+    paymentData,
 
-        // BACKEND CALL (optional now)
-        fetch("/approve-payment", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ paymentId })
-        });
+    {
 
+      onReadyForServerApproval:
+      async function(paymentId) {
+
+        console.log("Ready for approval");
+
+        const response = await fetch(
+          "/api/approve",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type":
+              "application/json"
+            },
+
+            body: JSON.stringify({
+              paymentId
+            })
+          }
+        );
+
+        const data =
+          await response.json();
+
+        console.log(data);
       },
 
-      onReadyForServerCompletion: function(paymentId, txid) {
+      onReadyForServerCompletion:
+      async function(paymentId, txid) {
 
-        console.log("Complete:", paymentId, txid);
+        console.log("Ready for completion");
 
-        fetch("/complete-payment", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ paymentId, txid })
-        });
+        const response = await fetch(
+          "/api/complete",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type":
+              "application/json"
+            },
 
-        alert("Payment completed ✔️");
+            body: JSON.stringify({
+              paymentId,
+              txid
+            })
+          }
+        );
 
+        const data =
+          await response.json();
+
+        console.log(data);
+
+        alert("Payment Success ✅");
       },
 
       onCancel: function(paymentId) {
-        console.log("Cancelled:", paymentId);
-        alert("Payment cancelled ❌");
+
+        console.log("Cancelled");
+
       },
 
       onError: function(error) {
+
         console.error(error);
-        alert("Payment failed ❌");
+
+        alert("Payment Error");
+
       }
 
-    });
+    }
 
-  } catch (err) {
-    console.error(err);
-    alert("Payment error ❌");
-  }
+  );
+
 }
