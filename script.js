@@ -1,11 +1,8 @@
-function sendPayment() {
+async function sendPayment() {
 
   Pi.createPayment(
-
     0.1,
-
     "Pi Test Payment",
-
     {
       product: "Pi App Journey"
     },
@@ -15,37 +12,55 @@ function sendPayment() {
       onReadyForServerApproval:
       async function(paymentId) {
 
-        console.log(paymentId);
+        try {
 
-        await fetch("/api/approve", {
-          method: "POST",
-          headers: {
-            "Content-Type":
-            "application/json"
-          },
-          body: JSON.stringify({
-            paymentId
-          })
-        });
+          const res = await fetch("/api/approve", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ paymentId })
+          });
+
+          const data = await res.json();
+
+          console.log(data);
+
+        } catch(err) {
+
+          console.error("Approval Error:", err);
+
+        }
 
       },
 
       onReadyForServerCompletion:
       async function(paymentId, txid) {
 
-        await fetch("/api/complete", {
-          method: "POST",
-          headers: {
-            "Content-Type":
-            "application/json"
-          },
-          body: JSON.stringify({
-            paymentId,
-            txid
-          })
-        });
+        try {
 
-        alert("Payment Success ✅");
+          const res = await fetch("/api/complete", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              paymentId,
+              txid
+            })
+          });
+
+          const data = await res.json();
+
+          console.log(data);
+
+          alert("Payment Success ✅");
+
+        } catch(err) {
+
+          console.error("Completion Error:", err);
+
+        }
 
       },
 
@@ -57,7 +72,7 @@ function sendPayment() {
 
       onError: function(error) {
 
-        console.error(error);
+        console.error("Pi Error:", error);
 
       }
 
