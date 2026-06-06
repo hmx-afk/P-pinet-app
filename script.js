@@ -1,16 +1,60 @@
+Pi.init({
+  version: "2.0",
+  sandbox: true
+});
+
+let currentUser = null;
+
+async function login() {
+
+  try {
+
+    const scopes = ['username', 'payments'];
+
+    const auth = await Pi.authenticate(
+      scopes,
+      function(payment) {}
+    );
+
+    currentUser = auth.user;
+
+    document.getElementById("status").innerText =
+      "Welcome " + currentUser.username;
+
+    alert("Wallet Connected ✅");
+
+  } catch (err) {
+
+    console.error(err);
+
+    alert("Login Failed");
+
+  }
+
+}
+
 async function sendPayment() {
 
+  if (!currentUser) {
+
+    alert("Please connect wallet first");
+
+    return;
+
+  }
+
   Pi.createPayment(
-    0.1,
-    "Pi Test Payment",
     {
-      product: "Pi App Journey"
+      amount: 0.1,
+      memo: "Pi App Journey",
+      metadata: {
+        product: "Pi App Journey"
+      }
     },
 
     {
 
-      onReadyForServerApproval:
-      async function(paymentId) {
+      onReadyForServerApproval: async function(paymentId) {
 
         try {
 
@@ -22,20 +66,17 @@ async function sendPayment() {
             body: JSON.stringify({ paymentId })
           });
 
-          const data = await res.json();
-
-          console.log(data);
+          console.log(await res.json());
 
         } catch(err) {
 
-          console.error("Approval Error:", err);
+          console.error(err);
 
         }
 
       },
 
-      onReadyForServerCompletion:
-      async function(paymentId, txid) {
+      onReadyForServerCompletion: async function(paymentId, txid) {
 
         try {
 
@@ -50,15 +91,13 @@ async function sendPayment() {
             })
           });
 
-          const data = await res.json();
-
-          console.log(data);
+          console.log(await res.json());
 
           alert("Payment Success ✅");
 
         } catch(err) {
 
-          console.error("Completion Error:", err);
+          console.error(err);
 
         }
 
@@ -66,13 +105,13 @@ async function sendPayment() {
 
       onCancel: function(paymentId) {
 
-        console.log("Cancelled");
+        console.log("Payment Cancelled");
 
       },
 
       onError: function(error) {
 
-        console.error("Pi Error:", error);
+        console.error(error);
 
       }
 
@@ -81,3 +120,11 @@ async function sendPayment() {
   );
 
 }
+
+document
+  .getElementById("loginBtn")
+  .addEventListener("click", login);
+
+document
+  .getElementById("payBtn")
+  .addEventListener("click", sendPayment);
